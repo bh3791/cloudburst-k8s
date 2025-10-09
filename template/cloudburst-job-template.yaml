@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${JOB_NAME}
+  # namespace: cloudburst
+  labels:
+    app: ${CONTAINER_NAME}
+spec:
+  # for debugging, allow logs to stick around for now.
+#  ttlSecondsAfterFinished: 3600  # Job will be cleaned up 1 hour after completion
+  template:
+    metadata:
+      name: ${CONTAINER_NAME}
+      labels:
+        app: ${CONTAINER_NAME}
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: ${CONTAINER_NAME}
+        image: "${CONTAINER_IMAGE}"
+        imagePullPolicy: Always
+        env:
+        - name: WORK_ITEM
+          value: "${WORK_ITEM}"
+        - name: STORAGE_TYPE
+          value: "${STORAGE_TYPE}"
+        - name: STORAGE_CONTAINER
+          value: "${STORAGE_CONTAINER}"
+        - name: MODE_STR
+          value: "${MODE_STR}"
+        resources:
+          requests:
+            memory: "2048Mi"
+            cpu: "2"
+          limits:
+            memory: "2048Mi"
+            cpu: "2"
+        volumeMounts:
+          - name: task-config
+            mountPath: /work/tasks.json
+            subPath: tasks.json
+            readOnly: true
+          - name: ssh-key
+            mountPath: /home/ubuntu/.ssh/id_ed25519
+            subPath: id_ed25519
+      volumes:
+        - name: task-config
+          configMap:
+            name: task-config
+        - name: ssh-key
+          secret:
+            secretName: ssh-key
+            defaultMode: 288 #0440
+      restartPolicy: Never  # OnFailure

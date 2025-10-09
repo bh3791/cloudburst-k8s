@@ -1,0 +1,5 @@
+pika
+kubernetes
+argparse
+pyyaml
+prometheus-client
