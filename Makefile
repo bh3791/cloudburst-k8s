@@ -10,7 +10,7 @@ STORAGE_IP=bruce@bruce-mint
 
 # post a job
 post-job:
-	python3 kueue_pub.py -work_item Site00006 -storage-type network-rsync -storage-container bruce@bruce-mint -kueue_queue cloudburst -container_name la-haz -image bhdockr/la-haz -save
+	python3 kueue_pub.py -work_item Site00001 -storage-type network-rsync -storage-container bruce@bruce-mint -kueue_queue cloudburst -container_name la-haz -image bhdockr/la-haz -save
 
 monitor-jobs:
 	kubectl logs -l app=la-haz --follow --max-log-requests 40
@@ -20,7 +20,7 @@ clear-jobs:
 	kubectl delete job --field-selector=status.successful=0
 
 
-setup: update-configmaps init-keueue init-prometheus
+setup: update-configmaps init-kueue init-prometheus
 
 remove-all: delete-keueue delete-prometheus
 
@@ -50,18 +50,28 @@ k3s-init:
 k3s-delete:
 	sudo /usr/local/bin/k3s-uninstall.sh
 
-install-kueue:
-	kubectl apply --server-side -k deployment/kueue-install.yaml --force-conflicts
+init-kueue:
+	kubectl apply --server-side -k deployment/kueue-install/ --force-conflicts
+	kubectl apply -f deployment/kueue-queues.yaml
 
 delete-kueue:
-	kubectl delete -f deployment/kueue-install.yaml
+	kubectl delete -f deployment/kueue-queues.yaml
+	kubectl delete -f deployment/kueue-install/
 
 init-prometheus:
 	kubectl apply -f deployment/prometheus-configmap.yaml
+	kubectl apply -f deployment/prometheus-rules-configmap.yaml
+	kubectl apply -f deployment/alertmanager-configmap.yaml
+	kubectl apply -f deployment/alertmanager-smtp-secret.yaml
+	kubectl apply -f deployment/alertmanager-deployment.yaml
 	kubectl apply -f deployment/kube-state-metrics.yaml
 	kubectl apply -f deployment/prometheus-deployment.yaml
 
 delete-prometheus:
-	kubectl delete -f deployment/prometheus-deployment.yaml
-	kubectl delete -f deployment/kube-state-metrics.yaml
-	kubectl delete -f deployment/prometheus-configmap.yaml
+	-kubectl delete -f deployment/prometheus-deployment.yaml
+	-kubectl delete -f deployment/kube-state-metrics.yaml
+	-kubectl delete -f deployment/alertmanager-deployment.yaml
+	-kubectl delete -f deployment/alertmanager-smtp-secret.yaml
+	-kubectl delete -f deployment/alertmanager-configmap.yaml
+	-kubectl delete -f deployment/prometheus-rules-configmap.yaml
+	-kubectl delete -f deployment/prometheus-configmap.yaml

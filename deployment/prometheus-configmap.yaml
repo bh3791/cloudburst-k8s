@@ -10,16 +10,27 @@ data:
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
+    rule_files:
+      - /etc/prometheus/alerting-rules.yaml
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+                - alertmanager.default.svc.cluster.local:9093
     scrape_configs:
       - job_name: prometheus
         static_configs:
           - targets:
               - localhost:9090
-      - job_name: cloudburst-controller
+      - job_name: kueue-controller-manager
         metrics_path: /metrics
+        scheme: https
+        tls_config:
+          insecure_skip_verify: true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
         static_configs:
           - targets:
-              - cloudburst-controller-metrics.default.svc.cluster.local:8000
+              - kueue-controller-manager-metrics-service.kueue-system.svc.cluster.local:8443
       - job_name: kube-state-metrics
         metrics_path: /metrics
         static_configs:

@@ -49,6 +49,9 @@ spec:
             - name: prometheus-config
               mountPath: /etc/prometheus/prometheus.yml
               subPath: prometheus.yml
+            - name: prometheus-rules
+              mountPath: /etc/prometheus/alerting-rules.yaml
+              subPath: alerting-rules.yaml
       volumes:
         - name: prometheus-storage
           emptyDir: {}
@@ -58,6 +61,12 @@ spec:
             items:
               - key: prometheus.yml
                 path: prometheus.yml
+        - name: prometheus-rules
+          configMap:
+            name: prometheus-alerting-rules
+            items:
+              - key: alerting-rules.yaml
+                path: alerting-rules.yaml
 ---
 apiVersion: v1
 kind: Service

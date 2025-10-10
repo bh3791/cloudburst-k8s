@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-alerting-rules
+  namespace: default
+  labels:
+    app: prometheus
+data:
+  alerting-rules.yaml: |
+    groups:
+      - name: cloudburst-alerts
+        rules:
+          - alert: CloudburstJobFailed
+            expr: sum by (namespace, job_name) (kube_job_status_failed{namespace="default",job="kube-state-metrics"}) > 0
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Job {{ $labels.job_name }} failed"
+              description: "Kubernetes Job {{ $labels.job_name }} in namespace {{ $labels.namespace }} has observed failures for over 5 minutes."
+          - alert: WorkerNodeDown
+            expr: kube_node_status_condition{condition="Ready",status!="true",job="kube-state-metrics"} == 1
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Node {{ $labels.node }} is not Ready"
+              description: "Kubernetes node {{ $labels.node }} reported Ready != true for more than 5 minutes."
