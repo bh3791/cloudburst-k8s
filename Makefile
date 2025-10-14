@@ -70,7 +70,6 @@ delete-prometheus:
 	-kubectl delete -f deployment/prometheus-deployment.yaml
 	-kubectl delete -f deployment/kube-state-metrics.yaml
 	-kubectl delete -f deployment/alertmanager-deployment.yaml
-	-kubectl delete -f deployment/alertmanager-smtp-secret.yaml
 	-kubectl delete -f deployment/alertmanager-configmap.yaml
 	-kubectl delete -f deployment/prometheus-rules-configmap.yaml
 	-kubectl delete -f deployment/prometheus-configmap.yaml
