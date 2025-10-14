@@ -61,8 +61,7 @@ delete-kueue:
 init-prometheus:
 	kubectl apply -f deployment/prometheus-configmap.yaml
 	kubectl apply -f deployment/prometheus-rules-configmap.yaml
-	kubectl apply -f deployment/alertmanager-configmap.yaml
-	kubectl apply -f deployment/alertmanager-smtp-secret.yaml
+	envsubst < deployment/alertmanager-configmap.yaml | k apply -f -
 	kubectl apply -f deployment/alertmanager-deployment.yaml
 	kubectl apply -f deployment/kube-state-metrics.yaml
 	kubectl apply -f deployment/prometheus-deployment.yaml
