@@ -70,7 +70,7 @@ parser.add_argument(
     "-job-template",
     dest="job_template",
     help="Path to the Job template used for substitution",
-    default="cloudburst-job-template.yaml")
+    default="template/cloudburst-job-template.yaml")
 parser.add_argument(
     "-param",
     dest="extra_params",
