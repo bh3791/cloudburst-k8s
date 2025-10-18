@@ -19,6 +19,9 @@ clear-jobs:
 	kubectl delete job --field-selector=status.successful=1
 	kubectl delete job --field-selector=status.successful=0
 
+clear-rs:
+	kubectl get rs -o jsonpath='{range .items[?(@.status.replicas==0)]}{.metadata.name}{"\n"}{end}' \
+	| xargs -r -I{} kubectl delete rs {}
 
 setup: update-configmaps init-kueue init-prometheus
 
