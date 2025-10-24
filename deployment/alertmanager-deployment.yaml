@@ -24,27 +24,6 @@ spec:
           ports:
             - containerPort: 9093
               name: web
-          env:
-            - name: SMTP_SMARTHOST
-              valueFrom:
-                secretKeyRef:
-                  name: alertmanager-smtp
-                  key: smtp_smarthost
-            - name: SMTP_FROM
-              valueFrom:
-                secretKeyRef:
-                  name: alertmanager-smtp
-                  key: smtp_from
-            - name: SMTP_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: alertmanager-smtp
-                  key: smtp_username
-            - name: SMTP_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: alertmanager-smtp
-                  key: smtp_password
           volumeMounts:
             - name: alertmanager-config
               mountPath: /etc/alertmanager/alertmanager.yml

@@ -35,7 +35,7 @@ create-configmaps:
 
 	# these configmaps are used to reduce the number of docker rebuilds
 	kubectl create configmap task-config --from-file=../ucerf3-hazard/tasks.json
-	kubectl create configmap job-template --from-file=cloudburst-job-template.yaml
+	kubectl create configmap job-template --from-file=./template/cloudburst-job-template.yaml
 
 delete-configmaps:
 	# the following secrets are used by the cloudburst job template
